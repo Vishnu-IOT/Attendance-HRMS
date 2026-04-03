@@ -1,0 +1,463 @@
+/* Professional Attendance Table */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+
+  --primary: #2563eb;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+
+  --bg: #f5f7fb;
+  --card: #ffffff;
+
+  --text-main: #111827;
+  --text-muted: #6b7280;
+
+  --border: #e5e7eb;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+}
+
+/* Page Layout */
+
+.attendance-page {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+}
+
+/* Card */
+
+.glass-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header */
+
+.page-header {
+  padding: 26px 28px;
+  margin-bottom: 25px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Badge */
+
+.stat-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
+.badge-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.badge-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Table Container */
+
+.attendance-content {
+  padding: 24px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Table */
+
+.elegant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.elegant-table th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text-muted);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.elegant-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+/* Row Hover */
+
+.table-row:hover {
+  background: #f9fafb;
+}
+
+/* Employee Cell */
+
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.employee-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Time Badge */
+
+.time-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #f3f4f6;
+}
+
+.time-badge.in {
+  color: var(--primary);
+  background: #eff6ff;
+}
+
+.time-badge.out {
+  color: #374151;
+}
+
+/* Status */
+
+.status-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pill.present {
+  background: #ecfdf5;
+  color: var(--success);
+}
+
+.status-pill.absent {
+  background: #fef2f2;
+  color: var(--danger);
+}
+
+.late-indicator {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  background: var(--warning);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Hours */
+
+.hours-text {
+  font-weight: 600;
+  color: #374151;
+}
+
+.remaining-text {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.overtime-text {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.neutral-text {
+  color: var(--text-muted);
+}
+
+/* Empty State */
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+/* Loader */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
+.loader-pulse {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulse 1.5s infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(.9);
+    opacity: .7
+  }
+
+  50% {
+    transform: scale(1)
+  }
+
+  100% {
+    transform: scale(.9);
+    opacity: .7
+  }
+}
+
+/* Animation */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp .6s ease forwards;
+}
+
+.permission-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Responsive Layouts */
+
+/* Laptop / small desktop - 1024px */
+@media (max-width: 1024px) {
+  .attendance-page {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+  }
+
+  .header-content {
+    gap: 15px;
+  }
+
+  .stat-badge {
+    padding: 6px 12px;
+  }
+
+  .badge-value {
+    font-size: 20px;
+  }
+
+  .elegant-table th,
+  .elegant-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .avatar-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+}
+
+/* Tablet - 768px */
+@media (max-width: 768px) {
+  .attendance-page {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stat-badge {
+    padding: 5px 10px;
+  }
+
+  .badge-value {
+    font-size: 18px;
+  }
+
+  .table-responsive {
+    overflow-x: scroll;
+  }
+
+  .elegant-table th,
+  .elegant-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .employee-name {
+    font-size: 13px;
+  }
+
+  .avatar-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .time-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .status-pill {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+}
+
+/* Mobile - 420px */
+@media (max-width: 420px) {
+  .attendance-page {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .page-subtitle {
+    font-size: 11px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .stat-badge {
+    padding: 4px 8px;
+  }
+
+  .badge-value {
+    font-size: 16px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .elegant-table th,
+  .elegant-table td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .employee-name {
+    font-size: 12px;
+  }
+
+  .avatar-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .time-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .status-pill {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .permission-title-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

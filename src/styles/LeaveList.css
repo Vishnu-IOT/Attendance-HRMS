@@ -1,0 +1,813 @@
+/* LeaveList.css */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* ======================== PAGE ======================== */
+.leavelist-page {
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+}
+
+/* ======================== HEADER ======================== */
+.leavelist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 26px 30px;
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #2dd4bf 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(15, 118, 110, 0.25);
+  color: #fff;
+}
+
+.leavelist-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ll-title-icon {
+  font-size: 34px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.leavelist-title h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.leavelist-title p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ── Controls ── */
+.leavelist-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ll-search-wrap {
+  position: relative;
+}
+
+.ll-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 17px;
+}
+
+.ll-search {
+  padding: 11px 16px 11px 40px;
+  border-radius: 50px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  width: 240px;
+  outline: none;
+  color: #1e293b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.ll-search:focus {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+}
+
+.ll-refresh-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.ll-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.ll-refresh-btn .spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ll-status-dropdown {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+}
+
+.ll-status-dropdown:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+/* ======================== FILTER TABS ======================== */
+.ll-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ll-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 50px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ll-tab-count {
+  background: #f1f5f9;
+  border-radius: 50px;
+  padding: 1px 8px;
+  font-size: 12px;
+}
+
+/* Active / themed tabs */
+.ll-tab--all.ll-tab--active {
+  background: #0f766e;
+  color: #fff;
+  border-color: #0f766e;
+}
+
+.ll-tab--approved.ll-tab--active {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+}
+
+.ll-tab--pending.ll-tab--active {
+  background: #d97706;
+  color: #fff;
+  border-color: #d97706;
+}
+
+.ll-tab--rejected.ll-tab--active {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.ll-tab--all.ll-tab--active .ll-tab-count,
+.ll-tab--approved.ll-tab--active .ll-tab-count,
+.ll-tab--pending.ll-tab--active .ll-tab-count,
+.ll-tab--rejected.ll-tab--active .ll-tab-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.ll-tab:hover:not(.ll-tab--active) {
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+/* ======================== SUMMARY CARDS ======================== */
+.ll-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.ll-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 12px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.ll-sum-num {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ll-sum-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.75;
+}
+
+.ll-summary--total {
+  background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+  color: #0369a1;
+}
+
+.ll-summary--approved {
+  background: linear-gradient(135deg, #dcfce7, #d1fae5);
+  color: #16a34a;
+}
+
+.ll-summary--pending {
+  background: linear-gradient(135deg, #fef9c3, #fde68a);
+  color: #b45309;
+}
+
+.ll-summary--rejected {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #dc2626;
+}
+
+/* ======================== LOADING / ERROR ======================== */
+.ll-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 14px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.ll-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #0d9488;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.ll-error {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.ll-retry {
+  padding: 7px 16px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* ======================== TABLE ======================== */
+.ll-table-wrap {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+}
+
+.ll-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ll-table thead tr {
+  background: linear-gradient(135deg, #f0fdfa, #e0f2fe);
+}
+
+.ll-table th {
+  padding: 16px 18px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.ll-table tbody tr {
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.15s;
+}
+
+.ll-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ll-table tbody tr:hover {
+  background: #f0fdfa;
+}
+
+.ll-table td {
+  padding: 14px 18px;
+  vertical-align: middle;
+  color: #334155;
+}
+
+.ll-txt-center {
+  text-align: center !important;
+}
+
+.ll-idx {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ll-id-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.ll-emp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ll-name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.ll-empid {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.ll-date {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.ll-dim {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.ll-reason-cell {
+  max-width: 200px;
+}
+
+.ll-reason-text {
+  font-size: 13px;
+  color: #64748b;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+/* Status badges */
+.ll-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.status--approved {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.status--pending {
+  background: #fef9c3;
+  color: #b45309;
+  border: 1px solid #fef08a;
+}
+
+.status--rejected {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Actions */
+.ll-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ll-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 16px;
+}
+
+.ll-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ll-btn--approve {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.ll-btn--approve:hover:not(:disabled) {
+  background: #16a34a;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.ll-btn--reject {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.ll-btn--reject:hover:not(:disabled) {
+  background: #dc2626;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.ll-btn--pending {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.ll-btn--pending:hover:not(:disabled) {
+  background: #d97706;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ======================== MOBILE CARD LIST ======================== */
+.ll-card-list {
+  display: none;
+}
+
+.ll-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ll-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
+}
+
+.ll-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ll-card-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ll-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ll-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.ll-card-val {
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+  text-align: right;
+  line-height: 1.4;
+}
+
+.ll-card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+  margin-top: 4px;
+}
+
+.ll-card-action-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.2s;
+}
+
+.ll-card-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* ======================== 1024px (Tablet / Small Laptop) ======================== */
+
+@media (max-width:1024px) {
+
+  .leavelist-page {
+    padding: 18px;
+  }
+
+  .leavelist-header {
+    padding: 22px 24px;
+    border-radius: 18px;
+  }
+
+  .leavelist-title h1 {
+    font-size: 22px;
+  }
+
+  .ll-title-icon {
+    font-size: 30px;
+    padding: 9px;
+  }
+
+  .ll-search {
+    width: 210px;
+    font-size: 13px;
+  }
+
+  .ll-summary-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .ll-sum-num {
+    font-size: 26px;
+  }
+
+  .ll-table th,
+  .ll-table td {
+    padding: 12px 14px;
+  }
+
+  .ll-reason-cell {
+    max-width: 160px;
+  }
+
+}
+
+
+/* ======================== 768px (Tablet / Large Mobile) ======================== */
+
+@media (max-width:768px) {
+
+  .leavelist-page {
+    padding: 16px;
+  }
+
+  .leavelist-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+  }
+
+  .leavelist-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ll-search-wrap {
+    flex: 1;
+  }
+
+  .ll-search {
+    width: 100%;
+  }
+
+  .ll-summary-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .ll-sum-num {
+    font-size: 24px;
+  }
+
+  .ll-tabs {
+    gap: 6px;
+  }
+
+  .ll-tab {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  /* Switch to card layout */
+
+  .ll-table-wrap {
+    display: none;
+  }
+
+  .ll-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ll-card {
+    border-radius: 14px;
+  }
+
+  .ll-card-head {
+    padding: 14px 16px;
+  }
+
+  .ll-card-body {
+    padding: 14px 16px;
+  }
+
+}
+
+
+/* ======================== 420px (Mobile Phones) ======================== */
+
+@media (max-width:420px) {
+
+  .leavelist-page {
+    padding: 12px;
+  }
+
+  .leavelist-header {
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .ll-title-icon {
+    font-size: 24px;
+    padding: 7px;
+  }
+
+  .leavelist-title h1 {
+    font-size: 18px;
+  }
+
+  .leavelist-title p {
+    font-size: 12px;
+  }
+
+  .ll-search {
+    font-size: 12px;
+    padding: 10px 14px 10px 36px;
+  }
+
+  .ll-summary-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ll-summary-card {
+    padding: 14px 10px;
+  }
+
+  .ll-sum-num {
+    font-size: 22px;
+  }
+
+  .ll-sum-label {
+    font-size: 10px;
+  }
+
+  .ll-tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .ll-tab-count {
+    font-size: 10px;
+  }
+
+  .ll-card-list {
+    gap: 12px;
+  }
+
+  .ll-card-head {
+    padding: 12px 14px;
+  }
+
+  .ll-card-body {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .ll-card-label {
+    font-size: 10px;
+    min-width: 70px;
+  }
+
+  .ll-card-val {
+    font-size: 12px;
+  }
+
+  .ll-card-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ll-card-action-btn {
+    font-size: 11px;
+    padding: 7px;
+  }
+
+  .ll-error {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ll-retry {
+    margin-left: 0;
+  }
+
+}
