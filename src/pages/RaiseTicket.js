@@ -4,6 +4,7 @@ import Lottie from 'react-lottie';
 import animationData from '../LottieFiles/Completing Tasks.json';
 import { IoAdd } from 'react-icons/io5';
 import { createPortal } from 'react-dom';
+import { FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
 
 const RaiseTicket = () => {
   const [formData, setFormData] = useState({
@@ -30,6 +31,7 @@ const RaiseTicket = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [notificationId, setNotificationId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
 
   const monthOptions = [
     { label: 'January', value: '1' },
@@ -45,6 +47,20 @@ const RaiseTicket = () => {
     { label: 'November', value: '11' },
     { label: 'December', value: '12' },
   ];
+
+  const STATUS_CONFIG = {
+    approved: {
+      label: 'Approved',
+      icon: <FiCheckCircle />,
+      cls: 'status--approved',
+    },
+    pending: { label: 'Pending', icon: <FiClock />, cls: 'status--pending' },
+    rejected: {
+      label: 'Rejected',
+      icon: <FiXCircle />,
+      cls: 'status--rejected',
+    },
+  };
 
   const defaultOptions = {
     loop: true,
@@ -145,7 +161,7 @@ const RaiseTicket = () => {
     };
     fetchRaiseTicket();
     fetchEmployees();
-  }, [activeForm, deleteId, dateFilter]);
+  }, [activeForm, deleteId, dateFilter, updatingId]);
 
   /* ================= HANDLE INPUT ================= */
 
@@ -212,6 +228,50 @@ const RaiseTicket = () => {
       alert('Error submitting form');
     } finally {
       setActiveForm(false);
+    }
+  };
+
+  /* ================= UPDATE TICKET STATUS ================= */
+
+  const handleStatusUpdate = async (id, status) => {
+    const submitData = new FormData();
+    submitData.append('id', id);
+    submitData.append('status', status);
+
+    if (updatingId) return;
+
+    try {
+      setUpdatingId(id);
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `https://hrms.mpdatahub.com/api/ticket/status`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+          body: submitData,
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log(result);
+        alert(result.message || 'Ticket Status Updated successfully!');
+      } else {
+        alert(
+          'Failed to Update Ticket Status: ' +
+            (result.message || 'Unknown error')
+        );
+      }
+    } catch (error) {
+      console.error('Error Updating Ticket Status:', error);
+      alert('Error Updating Ticket Status');
+    } finally {
+      setDeleteId(null);
+      setUpdatingId(null);
     }
   };
 
@@ -412,7 +472,7 @@ const RaiseTicket = () => {
                     onChange={handleChange}
                     required
                   >
-                    <option value=""></option>
+                    <option value="">Select Type</option>
                     <option value="clock_in">CheckIn</option>
                     <option value="clock_out">CheckOut</option>
                   </select>
@@ -473,84 +533,113 @@ const RaiseTicket = () => {
                 <th>Reason</th>
                 <th>Status</th>
                 {/* <th>Worked Hours</th> */}
+                <th className="ll-txt-center">Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {raiseTicket.length > 0 ? (
-                raiseTicket.map((record) => (
-                  <tr key={record.id} className="table-row">
-                    {/* EMPLOYEE */}
-                    <td>
-                      <div className="employee-cell">
-                        <div className="avatar-circle">
-                          {getInitials(record.user.name)}
-                        </div>
+                raiseTicket.map((record) => {
+                  const sc =
+                    STATUS_CONFIG[record.status] || STATUS_CONFIG.pending;
+                  const isUpdating = updatingId === record.id;
 
-                        <span className="employee-name">
-                          {record.user.name}
-                        </span>
-                      </div>
-                    </td>
+                  return (
+                    <tr key={record.id} className="table-row">
+                      {/* EMPLOYEE */}
+                      <td>
+                        <div className="employee-cell">
+                          <div className="avatar-circle">
+                            {getInitials(record.user.name)}
+                          </div>
 
-                    {/* DATE */}
-                    <td>{formatDate(record.date)}</td>
-
-                    {/* CHECK IN */}
-                    <td>
-                      <div className="time-badge in">
-                        {record.type === 'clock_in'
-                          ? formatTime(record.time)
-                          : '--'}
-                      </div>
-                    </td>
-
-                    {/* CHECK OUT */}
-                    <td>
-                      <div className="time-badge out">
-                        {record.type === 'clock_out'
-                          ? formatTime(record.time)
-                          : '--'}
-                      </div>
-                    </td>
-
-                    {/* DATE */}
-                    <td>{record.reason}</td>
-
-                    {/* STATUS */}
-                    <td>
-                      <div className="status-flexs">
-                        <span
-                          className={`status-pills ${
-                            record.status?.toLowerCase() === 'approved'
-                              ? 'present'
-                              : record.status?.toLowerCase() === 'rejected'
-                                ? 'absent'
-                                : 'pending'
-                          }`}
-                        >
-                          {record.status || 'N/A'}
-                        </span>
-
-                        {record.late_checkin === 1 && (
-                          <span
-                            className="late-indicators"
-                            title={`Late by ${record.late_checkin_time}`}
-                          >
-                            Late
+                          <span className="employee-name">
+                            {record.user.name}
                           </span>
-                        )}
-                      </div>
-                    </td>
+                        </div>
+                      </td>
 
-                    {/* WORKED HOURS */}
-                    {/* <td>
+                      {/* DATE */}
+                      <td>{formatDate(record.date)}</td>
+
+                      {/* CHECK IN */}
+                      <td>
+                        <div className="time-badge in">
+                          {record.type === 'clock_in'
+                            ? formatTime(record.time)
+                            : '--'}
+                        </div>
+                      </td>
+
+                      {/* CHECK OUT */}
+                      <td>
+                        <div className="time-badge out">
+                          {record.type === 'clock_out'
+                            ? formatTime(record.time)
+                            : '--'}
+                        </div>
+                      </td>
+
+                      {/* DATE */}
+                      <td>{record.reason}</td>
+
+                      {/* STATUS */}
+                      <td>
+                        <div className="status-flexs">
+                          <span
+                            className={`status-pills ${
+                              record.status?.toLowerCase() === 'approved'
+                                ? 'present'
+                                : record.status?.toLowerCase() === 'rejected'
+                                  ? 'absent'
+                                  : 'pending'
+                            }`}
+                          >
+                            {sc.icon} {sc.label}
+                          </span>
+
+                          {record.late_checkin === 1 && (
+                            <span
+                              className="late-indicators"
+                              title={`Late by ${record.late_checkin_time}`}
+                            >
+                              Late
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* WORKED HOURS */}
+                      {/* <td>
                       <span className="hours-text">
                         {formatDuration(record.time)}
                       </span>
                     </td> */}
-                  </tr>
-                ))
+
+                      <td className="ll-txt-center">
+                        {record.status === 'pending' ? (
+                          <select
+                            className="ll-status-dropdown"
+                            value={record.status}
+                            disabled={isUpdating}
+                            onChange={(e) =>
+                              handleStatusUpdate(record.id, e.target.value)
+                            }
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                          </select>
+                        ) : (
+                          <span className="ll-status-fixed">
+                            {' '}
+                            {sc.icon} {sc.label}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="7" className="empty-state">

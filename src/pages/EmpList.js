@@ -1,51 +1,56 @@
-import React, { useEffect, useState } from "react";
-import "../styles/EmpList.css";
-import { FiEdit2, FiX, FiSave, FiSearch } from "react-icons/fi";
+import React, { useEffect, useState } from 'react';
+import '../styles/EmpList.css';
+import { FiEdit2, FiX, FiSave, FiSearch } from 'react-icons/fi';
 import Lottie from 'react-lottie';
 import animationData from '../LottieFiles/Employee Search.json';
 
-const API_URL = "https://hrms.mpdatahub.com/api/employee-List";
-const UPDATE_URL = "https://hrms.mpdatahub.com/api/update-profile";
+const API_URL = 'https://hrms.mpdatahub.com/api/employee-List';
+const UPDATE_URL = 'https://hrms.mpdatahub.com/api/update-profile';
+const INACTIVE_URL = 'https://hrms.mpdatahub.com/api/employees/inactive';
 
 export default function EmpList() {
-
   const [employees, setEmployees] = useState([]);
+  const [inactiveEmployees, setInactiveEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [editModal, setEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
+  const [saveError, setSaveError] = useState('');
+
+  const [filterStatus, setFilterStatus] = useState('active');
 
   useEffect(() => {
     fetchEmployees();
+    fetchInactiveEmployees();
   }, []);
-
 
   const defaultOptions = {
     loop: true,
     autoplay: true,
     animationData: animationData,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice'
-    }
+      preserveAspectRatio: 'xMidYMid slice',
+    },
   };
 
-  /* ---------------- FETCH EMPLOYEES ---------------- */
+  const counts = {
+    active: employees.length,
+    inactive: inactiveEmployees.length,
+  };
+
+  /* ---------------- FETCH ACTIVE EMPLOYEES ---------------- */
 
   const fetchEmployees = async () => {
-
     try {
-
       const res = await fetch(API_URL);
       const json = await res.json();
 
       if (json.success) {
         setEmployees(json.data);
       }
-
     } catch (err) {
       console.log(err);
     }
@@ -53,19 +58,63 @@ export default function EmpList() {
     setLoading(false);
   };
 
+  /* ---------------- FETCH INACTIVE EMPLOYEES ---------------- */
+
+  const fetchInactiveEmployees = async () => {
+    try {
+      const res = await fetch(INACTIVE_URL);
+      const json = await res.json();
+
+      if (json.success) {
+        setInactiveEmployees(json.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    setLoading(false);
+  };
+
+  /* ---------------- UPDATE EMPLOYEES STATUS ---------------- */
+
+  const updateEmployeeStatus = async (id, status) => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `https://hrms.mpdatahub.com/api/update-Employee-Status?user_id=${id}&status=${status}`
+      );
+      const json = await res.json();
+
+      if (json.success) {
+        fetchEmployees();
+        fetchInactiveEmployees();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    setLoading(false);
+  };
+
+  /* ---------------- TOOGLE BUTTON ---------------- */
+
+  const handleToggle = (id, status) => {
+    const updatedStatus = status === 0 ? 1 : 0;
+    updateEmployeeStatus(id, updatedStatus);
+  };
+
   /* ---------------- OPEN EDIT ---------------- */
 
   const openEdit = (emp) => {
-
     setEditData({
       id: emp.id,
-      name: emp.name || "",
-      empid: emp.empid || "",
-      email: emp.email || "",
-      mobile: emp.mobile || "",
-      position: emp.position || "",
-      address: emp.address || "",
-      dob: emp.dob || ""
+      name: emp.name || '',
+      empid: emp.empid || '',
+      email: emp.email || '',
+      mobile: emp.mobile || '',
+      position: emp.position || '',
+      address: emp.address || '',
+      dob: emp.dob || '',
     });
 
     setEditModal(true);
@@ -74,55 +123,49 @@ export default function EmpList() {
   /* ---------------- INPUT CHANGE ---------------- */
 
   const handleEditChange = (e) => {
-
     const { name, value } = e.target;
 
     setEditData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   /* ---------------- SAVE EDIT ---------------- */
 
   const saveEdit = async () => {
-
     if (!editData?.id) {
-      setSaveError("ID missing");
+      setSaveError('ID missing');
       return;
     }
 
     setSaving(true);
-    setSaveError("");
+    setSaveError('');
 
     try {
-
       const formData = new FormData();
 
-      formData.append("id", editData.id);
+      formData.append('id', editData.id);
 
       // only send changed fields
-      if (editData.name) formData.append("name", editData.name);
-      if (editData.empid) formData.append("empid", editData.empid);
-      if (editData.email) formData.append("email", editData.email);
-      if (editData.mobile) formData.append("mobile", editData.mobile);
-      if (editData.position) formData.append("position", editData.position);
-      if (editData.address) formData.append("address", editData.address);
-      if (editData.dob) formData.append("dob", editData.dob);
-
-
+      if (editData.name) formData.append('name', editData.name);
+      if (editData.empid) formData.append('empid', editData.empid);
+      if (editData.email) formData.append('email', editData.email);
+      if (editData.mobile) formData.append('mobile', editData.mobile);
+      if (editData.position) formData.append('position', editData.position);
+      if (editData.address) formData.append('address', editData.address);
+      if (editData.dob) formData.append('dob', editData.dob);
 
       const res = await fetch(UPDATE_URL, {
-        method: "POST",
-        body: formData
+        method: 'POST',
+        body: formData,
       });
 
       const json = await res.json();
 
-      console.log("API Response:", json);
+      console.log('API Response:', json);
 
       if (json.success) {
-
         setEmployees((prev) =>
           prev.map((emp) =>
             emp.id === editData.id ? { ...emp, ...editData } : emp
@@ -130,30 +173,33 @@ export default function EmpList() {
         );
 
         setEditModal(false);
-
       } else {
-        setSaveError(json.message || "Update failed");
+        setSaveError(json.message || 'Update failed');
       }
     } catch {
-      setSaveError("Network error");
+      setSaveError('Network error');
     }
     setSaving(false);
   };
   /* ---------------- SEARCH ---------------- */
-  const filtered = employees.filter((emp) =>
-    emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  const active = employees.filter(
+    (emp) =>
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const inactive = inactiveEmployees.filter(
+    (emp) =>
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   /* ---------------- UI ---------------- */
   return (
-
     <div className="emplist-page">
-
       {/* HEADER */}
 
       <div className="emplist-header">
-
         <div className="emplist-title">
           <Lottie options={defaultOptions} height={90} width={70} />
           <div>
@@ -164,69 +210,99 @@ export default function EmpList() {
 
         <div className="emplist-search-wrap">
           <FiSearch className="search-icon" />
-          <input className="emplist-search" placeholder="Search employee..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input
+            className="emplist-search"
+            placeholder="Search employee..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
       {loading && <p>Loading...</p>}
 
+      <div className="pl-tabs">
+        {['active', 'inactive'].map((s) => (
+          <button
+            key={s}
+            className={`pl-tab ${filterStatus === s ? 'pl-tab--active' : ''}`}
+            onClick={() => {
+              setFilterStatus(s);
+            }}
+          >
+            {s.charAt(0).toUpperCase() + s.slice(1)}
+            <span className="pl-tab-count">{counts[s]}</span>
+          </button>
+        ))}
+      </div>
+
       {/* EMPLOYEE GRID */}
 
       <div className="emp-grid">
-
-        {filtered.map((emp) => (
-
-          <div className="emp-card" key={emp.id}>
-
-            <div className="emp-card-top">
-
-              <img src={emp.profile_img} alt={emp.name} className="emp-avatar" />
-              <div className="emp-badge">{emp.empid}</div>
-
-            </div>
-
-            <div className="emp-card-body">
-
-              <h3>{emp.name}</h3>
-
-              <span className="emp-position">
-                {emp.position || "N/A"}
-              </span>
-
-              <p><strong>Email:</strong> {emp.email}</p>
-              <p><strong>Phone:</strong> {emp.mobile}</p>
-              <p><strong>DOB:</strong> {emp.dob || "N/A"}</p>
-              <p><strong>Address:</strong> {emp.address}</p>
-
-            </div>
-
-            <div className="emp-card-actions">
-
-              <button
-                className="btn-edit"
-                onClick={() => openEdit(emp)}
-              >
-                <FiEdit2 /> Edit
-              </button>
-
-            </div>
-
+        {loading ? (
+          <div className="emp-loader">
+            <p>Loading employees...</p>
           </div>
+        ) : (
+          (filterStatus === 'active' ? active : inactive).map((emp) => (
+            <div className="emp-card" key={emp.id}>
+              <div className="emp-card-top">
+                <img
+                  src={emp.profile_img}
+                  alt={emp.name}
+                  className="emp-avatar"
+                />
+                <div className="emp-badge">{emp.empid}</div>
+              </div>
 
-        ))}
+              <div className="emp-card-body">
+                <h3>{emp.name}</h3>
 
+                <span className="emp-position">{emp.position || 'N/A'}</span>
+
+                <p>
+                  <strong>Email:</strong> {emp.email}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {emp.mobile}
+                </p>
+                <p>
+                  <strong>DOB:</strong> {emp.dob || 'N/A'}
+                </p>
+                <p>
+                  <strong>Address:</strong> {emp.address}
+                </p>
+
+                {/*============= BUTTONS =================*/}
+
+                <div key={emp.id} className="toggle-container">
+                  <button
+                    className={`toggle-btns ${emp.status === 1 ? 'active' : ''}`}
+                    onClick={() => handleToggle(emp.id, emp.status)}
+                  >
+                    <div className="toggle-circle"></div>
+                  </button>
+
+                  {/* <span className="toggle-label">{isOn ? 'ON' : 'OFF'}</span> */}
+                </div>
+              </div>
+
+              <div className="emp-card-actions">
+                <button className="btn-edit" onClick={() => openEdit(emp)}>
+                  <FiEdit2 /> Edit
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* EDIT MODAL */}
 
       {editModal && (
-
         <div className="modal-overlay">
-
           <div className="modal-box">
-
             <div className="modal-header">
-
               <h2>Edit Employee</h2>
 
               <button
@@ -235,29 +311,50 @@ export default function EmpList() {
               >
                 <FiX />
               </button>
-
             </div>
 
-            {saveError && (
-              <div className="modal-api-error">
-                {saveError}
-              </div>
-            )}
+            {saveError && <div className="modal-api-error">{saveError}</div>}
 
             <div className="modal-form">
-
-              <input name="name" value={editData.name} onChange={handleEditChange} />
-              <input name="empid" value={editData.empid} onChange={handleEditChange} />
-              <input name="email" value={editData.email} onChange={handleEditChange} />
-              <input name="mobile" value={editData.mobile} onChange={handleEditChange} />
-              <input name="position" value={editData.position} onChange={handleEditChange} />
-              <input type="date" name="dob" value={editData.dob} onChange={handleEditChange} />
-              <input name="address" value={editData.address} onChange={handleEditChange} />
-
+              <input
+                name="name"
+                value={editData.name}
+                onChange={handleEditChange}
+              />
+              <input
+                name="empid"
+                value={editData.empid}
+                onChange={handleEditChange}
+              />
+              <input
+                name="email"
+                value={editData.email}
+                onChange={handleEditChange}
+              />
+              <input
+                name="mobile"
+                value={editData.mobile}
+                onChange={handleEditChange}
+              />
+              <input
+                name="position"
+                value={editData.position}
+                onChange={handleEditChange}
+              />
+              <input
+                type="date"
+                name="dob"
+                value={editData.dob}
+                onChange={handleEditChange}
+              />
+              <input
+                name="address"
+                value={editData.address}
+                onChange={handleEditChange}
+              />
             </div>
 
             <div className="modal-footer">
-
               <button
                 className="btn-cancel"
                 onClick={() => setEditModal(false)}
@@ -265,22 +362,19 @@ export default function EmpList() {
                 Cancel
               </button>
 
-              <button
-                className="btn-save"
-                onClick={saveEdit}
-                disabled={saving}
-              >
-                {saving ? "Saving..." : <><FiSave /> Save</>}
+              <button className="btn-save" onClick={saveEdit} disabled={saving}>
+                {saving ? (
+                  'Saving...'
+                ) : (
+                  <>
+                    <FiSave /> Save
+                  </>
+                )}
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       )}
-
     </div>
   );
 }
