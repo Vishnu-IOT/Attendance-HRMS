@@ -686,9 +686,9 @@
 
   /* Switch to card layout */
 
-  .ll-table-wrap {
+  /* .ll-table-wrap {
     display: none;
-  }
+  } */
 
   .ll-card-list {
     display: flex;
