@@ -275,15 +275,19 @@ export default function EmpList() {
 
                 {/*============= BUTTONS =================*/}
 
-                <div key={emp.id} className="toggle-container">
-                  <button
-                    className={`toggle-btns ${emp.status === 1 ? 'active' : ''}`}
-                    onClick={() => handleToggle(emp.id, emp.status)}
-                  >
-                    <div className="toggle-circle"></div>
-                  </button>
+                <div className="emp-card-actions">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={emp.status === 1}
+                      onChange={() => handleToggle(emp.id, emp.status)}
+                    />
+                    <span className="slider"></span>
+                  </label>
 
-                  {/* <span className="toggle-label">{isOn ? 'ON' : 'OFF'}</span> */}
+                  <span className="status-text">
+                    {emp.status === 1 ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
               </div>
 
