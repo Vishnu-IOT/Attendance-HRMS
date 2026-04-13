@@ -18,6 +18,7 @@ import HolidayForm from './pages/HolidayForm';
 import Notification from './pages/Notification';
 import CompanyDetails from './pages/CompanyDetails';
 import RaiseTicket from './pages/RaiseTicket';
+import ProtectedRoute from './pages/ProtectedRoute';
 
 function App() {
   return (
@@ -25,7 +26,16 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                {' '}
+                <AdminLayout />{' '}
+              </ProtectedRoute>
+            }
+          >
+            {' '}
             <Route index element={<DashboardHome />} />
             <Route path="add-employee" element={<RegistrationForm />} />
             <Route path="emp-list" element={<EmpList />} />
