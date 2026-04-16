@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/DashboardHome.css';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardHome = () => {
+
+    const navigate = useNavigate();
+
     const [dashboardData, setDashboardData] = useState({
         total_employees: 0,
         present_count: 0,
@@ -151,10 +155,21 @@ const DashboardHome = () => {
                 </div>
 
                 <div className="stat-card glass-panel fade-in-up" style={{ animationDelay: '0.2s' }}>
-                    <div className="stat-content">
+                    <div
+                        className="stat-content"
+                        onClick={() => navigate("/admin/attendance")}
+                        style={{ cursor: "pointer" }}
+                    >
                         <h3>Present Today</h3>
                         <div className="stat-value">{present_count}</div>
-                        <div className="stat-trend positive"><span>{(total_employees > 0 ? (present_count / total_employees * 100).toFixed(0) : 0)}%</span> Attendance</div>
+                        <div className="stat-trend positive">
+                            <span>
+                                {total_employees > 0
+                                    ? (present_count / total_employees * 100).toFixed(0)
+                                    : 0}%
+                            </span>{" "}
+                            Attendance
+                        </div>
                     </div>
                     <div className="stat-icon present-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -162,7 +177,8 @@ const DashboardHome = () => {
                 </div>
 
                 <div className="stat-card glass-panel fade-in-up" style={{ animationDelay: '0.3s' }}>
-                    <div className="stat-content">
+                    <div className="stat-content"  onClick={() => navigate("/admin/leave-list")}
+                        style={{ cursor: "pointer" }}>
                         <h3>Absent</h3>
                         <div className="stat-value">{absent_count}</div>
                         <div className="stat-trend negative">Attention Required</div>
@@ -173,7 +189,8 @@ const DashboardHome = () => {
                 </div>
 
                 <div className="stat-card glass-panel fade-in-up" style={{ animationDelay: '0.4s' }}>
-                    <div className="stat-content">
+                    <div className="stat-content"  onClick={() => navigate("/admin/attendance")}
+                        style={{ cursor: "pointer" }}>
                         <h3>Late Arrivals</h3>
                         <div className="stat-value">{late_checkin_count}</div>
                         <div className="stat-trend warning">Delayed Entry</div>
