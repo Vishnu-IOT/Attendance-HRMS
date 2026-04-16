@@ -21,6 +21,7 @@ const CompanyDetails = () => {
     branch_lat: '',
     branch_address: '',
     branch_id: '',
+    meter: ''
   });
 
   const [activeCompanyForm, setActiveCompanyForm] = useState(false);
@@ -56,6 +57,7 @@ const CompanyDetails = () => {
       branch_lon: branch.branch_lon,
       branch_address: branch.branch_address,
       branch_id: branch.id,
+      meter: branch.meter || ''
     });
     setIsEdit(true);
     setActiveBranchForm(true);
@@ -371,6 +373,7 @@ const CompanyDetails = () => {
                 branch_lat: '',
                 branch_address: '',
                 branch_id: '',
+                meter: ''
               });
             }}
           >
@@ -389,6 +392,7 @@ const CompanyDetails = () => {
                     branch_lat: '',
                     branch_address: '',
                     branch_id: '',
+                    meter: ''
                   });
                 }}
               >
@@ -466,6 +470,19 @@ const CompanyDetails = () => {
                     rows="3"
                     required
                   ></textarea>
+                </div>
+
+                {/* RADIUS DROPDOWN */}
+                <div className="form-group">
+                  <label>Allowed Radius (Meters)</label>
+                  <select name="meter" value={formData1.meter} onChange={handleChange1} required>
+                    <option value="">Select Radius</option>
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((meter) => (
+                      <option key={meter} value={meter}>
+                        {meter} meters
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* SUBMIT */}
@@ -547,9 +564,13 @@ const CompanyDetails = () => {
                       {/* <span className="date">Lat:{data.branch_lat}</span>
                       <span className="date">Lon:{data.branch_lon}</span> */}
                     </div>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <span className="date">Lat:{data.branch_lat}</span>
-                      <span className="date">Lon:{data.branch_lon}</span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span className="date">Lat: {data.branch_lat}</span>
+                      <span className="date">Lon: {data.branch_lon}</span>
+                    </div>
+
+                    <div className="meter-badge">
+                      {data.meter} meters
                     </div>
                     <p className="description">{data.branch_address}</p>
                   </div>

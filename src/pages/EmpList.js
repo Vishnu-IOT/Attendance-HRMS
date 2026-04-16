@@ -115,9 +115,24 @@ export default function EmpList() {
       position: emp.position || '',
       address: emp.address || '',
       dob: emp.dob || '',
+      start_time: emp.start_time ? emp.start_time.slice(0, 5) : '',
+      end_time: emp.end_time ? emp.end_time.slice(0, 5) : '',
     });
 
     setEditModal(true);
+  };
+
+  const formatTime = (time) => {
+    if (!time) return '';
+
+    const [hour, minute] = time.split(':');
+
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+
+    h = h % 12 || 12; // convert 0 → 12
+
+    return `${h}:${minute} ${ampm}`;
   };
 
   /* ---------------- INPUT CHANGE ---------------- */
@@ -144,7 +159,11 @@ export default function EmpList() {
 
     try {
       const formData = new FormData();
-
+      const formatToHMS = (time) => {
+        if (!time) return '';
+        if (time.length === 8) return time;
+        return time + ':00'; // convert HH:mm → HH:mm:ss
+      };
       formData.append('id', editData.id);
 
       // only send changed fields
@@ -155,6 +174,13 @@ export default function EmpList() {
       if (editData.position) formData.append('position', editData.position);
       if (editData.address) formData.append('address', editData.address);
       if (editData.dob) formData.append('dob', editData.dob);
+      if (editData.start_time) {
+        formData.append('start_time', formatToHMS(editData.start_time));
+      }
+
+      if (editData.end_time) {
+        formData.append('end_time', formatToHMS(editData.end_time));
+      }
 
       const res = await fetch(UPDATE_URL, {
         method: 'POST',
@@ -272,7 +298,10 @@ export default function EmpList() {
                 <p>
                   <strong>Address:</strong> {emp.address}
                 </p>
-
+                <p>
+                  <strong>Work Time:</strong>{' '}
+                  {formatTime(emp.start_time)} to {formatTime(emp.end_time)}
+                </p>
                 {/*============= BUTTONS =================*/}
 
                 <div className="emp-card-actions">
@@ -356,7 +385,22 @@ export default function EmpList() {
                 value={editData.address}
                 onChange={handleEditChange}
               />
+              <input
+                type="time"
+                name="start_time"
+                value={editData.start_time}
+                onChange={handleEditChange}
+              />
+
+              <input
+                type="time"
+                name="end_time"
+                value={editData.end_time}
+                onChange={handleEditChange}
+              />
             </div>
+
+
 
             <div className="modal-footer">
               <button
