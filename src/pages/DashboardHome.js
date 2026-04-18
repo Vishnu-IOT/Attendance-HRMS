@@ -177,7 +177,9 @@ const DashboardHome = () => {
                 </div>
 
                 <div className="stat-card glass-panel fade-in-up" style={{ animationDelay: '0.3s' }}>
-                    <div className="stat-content"  onClick={() => navigate("/admin/leave-list")}
+                    <div className="stat-content" onClick={() => navigate("/admin/attendance", {
+                        state: { userType: "emp_absent" }
+                    })}
                         style={{ cursor: "pointer" }}>
                         <h3>Absent</h3>
                         <div className="stat-value">{absent_count}</div>
@@ -189,7 +191,7 @@ const DashboardHome = () => {
                 </div>
 
                 <div className="stat-card glass-panel fade-in-up" style={{ animationDelay: '0.4s' }}>
-                    <div className="stat-content"  onClick={() => navigate("/admin/attendance")}
+                    <div className="stat-content" onClick={() => navigate("/admin/attendance")}
                         style={{ cursor: "pointer" }}>
                         <h3>Late Arrivals</h3>
                         <div className="stat-value">{late_checkin_count}</div>

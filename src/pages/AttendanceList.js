@@ -2,12 +2,26 @@ import React, { useState, useEffect } from 'react';
 import '../styles/AttendanceList.css';
 import Lottie from 'react-lottie';
 import animationData from '../LottieFiles/Completing Tasks.json';
+import * as XLSX from "xlsx-js-style";
+import { useLocation } from "react-router-dom";
 
 const AttendanceList = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+
+  const [userType, setUserType] = useState(
+    location.state?.userType || 'emp_present'
+  );
 
   const now = new Date();
+
+  const [showModal, setShowModal] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [selectedUser, setSelectedUser] = useState('');
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [report, setReport] = useState([]);
 
   const [dateFilter, setDateFilter] = useState(now.toISOString().split('T')[0]);
 
@@ -25,26 +39,232 @@ const AttendanceList = () => {
     },
   };
 
+
   useEffect(() => {
+
+    let isMounted = true;
+    let timeoutId;
+
     const fetchAttendance = async () => {
       try {
-        const response = await fetch(
-          `https://hrms.mpdatahub.com/api/attendance-list?date=${dateFilter}`
-        );
+
+        let url = '';
+
+        switch (userType) {
+          case 'emp_present':
+            url = `https://hrms.mpdatahub.com/api/attendance-list?date=${dateFilter}`;
+            break;
+
+          case 'intern_present':
+            url = `https://hrms.mpdatahub.com/api/attendance-list-intern?date=${dateFilter}`;
+            break;
+
+          case 'emp_absent':
+            url = `https://hrms.mpdatahub.com/api/attendance-List-absent?date=${dateFilter}`;
+            break;
+
+          case 'intern_absent':
+            url = `https://hrms.mpdatahub.com/api/attendance-List-absentinten?date=${dateFilter}`;
+            break;
+
+          default:
+            url = `https://hrms.mpdatahub.com/api/attendance-list?date=${dateFilter}`;
+        }
+        const response = await fetch(url);
+
         const result = await response.json();
 
-        if (result.success && result.data) {
+        if (isMounted && result.success && result.data) {
           setAttendanceData(result.data);
+          setLoading(false);
         }
+
       } catch (error) {
         console.error('Error fetching attendance data:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          timeoutId = setTimeout(fetchAttendance, 10000);
+        }
       }
     };
 
     fetchAttendance();
-  }, [dateFilter]);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
+
+  }, [dateFilter, userType]); // ✅ ADD userType HERE
+
+  // ✅ FETCH EMPLOYEE / INTERN LIST
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const url =
+          userType === 'intern'
+            ? `https://hrms.mpdatahub.com/api/employee-List-roles`
+            : `https://hrms.mpdatahub.com/api/employee-List`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.success) {
+          setEmployees(data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchEmployees();
+  }, [userType]);
+
+  // ✅ FETCH MONTHLY REPORT
+  const fetchMonthlyReport = async () => {
+    if (!selectedUser) return alert("Select Employee");
+
+    try {
+      const res = await fetch(
+        `https://hrms.mpdatahub.com/api/get-Monthly-Summary?user_id=${selectedUser}&month=${month}&year=${year}`
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setReport(data.data.attendance);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getReportTitle = () => {
+    switch (userType) {
+      case 'emp_present':
+        return 'Employee Check-in List';
+      case 'intern_present':
+        return 'Intern Check-in List';
+      case 'emp_absent':
+        return 'Employee Non Check-in List';
+      case 'intern_absent':
+        return 'Intern Non Check-in List';
+      default:
+        return 'Attendance Report';
+    }
+  };
+
+  // ✅ DAILY EXPORT
+  const exportDailyReport = () => {
+    const worksheetData = attendanceData.map((item, index) => ({
+      "S.No": index + 1,
+      "Employee Name": item.name || "-",
+      "Date": item.attendance_date || "-",
+      "Check In": item.check_in || "-",
+      "Check Out": item.check_out || "-",
+      "Status": item.type || "-",
+      "Worked Hours": item.worked_hours || "-",
+    }));
+
+    // Create worksheet starting from row 5
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData, { origin: "A5" });
+
+    // Add Company Name + Report Title + Date
+    XLSX.utils.sheet_add_aoa(worksheet, [
+      ["Muthu & Co"],
+      [getReportTitle()],
+      [`Generated on: ${new Date().toLocaleDateString()}`],
+      []
+    ], { origin: "A1" });
+
+
+    // Apply styles for header
+    ["A1", "A2", "A3"].forEach(cell => {
+      if (worksheet[cell]) {
+        worksheet[cell].s = {
+          font: { bold: true, sz: cell === "A1" ? 16 : 14 },
+          alignment: { horizontal: "center" }
+        };
+      }
+    });
+    // Merge rows for clean centered header look
+    worksheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }, // Company Name
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } }, // Report Title
+      { s: { r: 2, c: 0 }, e: { r: 2, c: 6 } }  // Date
+    ];
+
+    // Column widths
+    worksheet["!cols"] = [
+      { wch: 6 },   // S.No
+      { wch: 25 },  // Employee Name
+      { wch: 15 },  // Date
+      { wch: 15 },  // Check In
+      { wch: 15 },  // Check Out
+      { wch: 15 },  // Status
+      { wch: 18 },  // Worked Hours
+    ];
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Report");
+
+    // Export file
+    XLSX.writeFile(
+      workbook,
+      `${getReportTitle().replace(/\s+/g, '_')}_${dateFilter}.xlsx`
+    );
+  };
+  const exportMonthlyReport = () => {
+    const worksheetData = report.map((r, index) => ({
+      "S.No": index + 1,
+      "Date": r.date || "-",
+      "Check In": r.check_in || "-",
+      "Check Out": r.check_out || "-",
+      "Status": r.type || "-",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData, { origin: "A5" });
+
+    // Header
+    XLSX.utils.sheet_add_aoa(worksheet, [
+      ["Muthu & Co"],
+      ["Monthly Attendance Report"],
+      [`Generated on: ${new Date().toLocaleDateString()}`],
+      []
+    ], { origin: "A1" });
+
+    // Merge (center alignment)
+    worksheet["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+      { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } }
+    ];
+
+    // Style (BOLD + CENTER)
+    ["A1", "A2", "A3"].forEach(cell => {
+      if (worksheet[cell]) {
+        worksheet[cell].s = {
+          font: { bold: true, sz: cell === "A1" ? 16 : 14 },
+          alignment: { horizontal: "center" }
+        };
+      }
+    });
+
+    // Column width
+    worksheet["!cols"] = [
+      { wch: 6 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 }
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly Report");
+
+    XLSX.writeFile(workbook, "Monthly_Attendance_Report.xlsx");
+  };
 
   // FORMAT TIME
   const formatTime = (timeString) => {
@@ -76,6 +296,16 @@ const AttendanceList = () => {
   const getInitials = (name) => {
     if (!name) return 'UN';
     return name.substring(0, 2).toUpperCase();
+  };
+  const openModal = () => {
+    setReport([]);
+    setSelectedUser('');
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setReport([]);
   };
 
   if (loading) {
@@ -120,6 +350,16 @@ const AttendanceList = () => {
           </div>
 
           <div className="header-actions">
+            <button className="primary-btn" onClick={exportDailyReport}>
+              Download Daily Report
+            </button>
+
+            <button className="success-btn" onClick={openModal}>
+              Monthly Report
+            </button>
+          </div>
+
+          <div className="header-actions">
             <div className="stat-badge">
               <span className="badge-label">Monthly Records</span>
               <span className="badge-value">{attendanceData.length}</span>
@@ -141,6 +381,49 @@ const AttendanceList = () => {
             required
           />
         </div>
+      </div>
+      <div className="attendance-toggle">
+
+        <button
+          className={userType === 'emp_present' ? 'active-toggle' : ''}
+          onClick={() => {
+            setUserType('emp_present');
+            setLoading(true);
+          }}
+        >
+          Employee Check-in List
+        </button>
+
+        <button
+          className={userType === 'intern_present' ? 'active-toggle' : ''}
+          onClick={() => {
+            setUserType('intern_present');
+            setLoading(true);
+          }}
+        >
+          Intern Check-in List
+        </button>
+
+        <button
+          className={userType === 'emp_absent' ? 'active-toggle' : ''}
+          onClick={() => {
+            setUserType('emp_absent');
+            setLoading(true);
+          }}
+        >
+          Employee Non Check-in List
+        </button>
+
+        <button
+          className={userType === 'intern_absent' ? 'active-toggle' : ''}
+          onClick={() => {
+            setUserType('intern_absent');
+            setLoading(true);
+          }}
+        >
+          Intern Non Check-in List
+        </button>
+
       </div>
 
       {/* TABLE */}
@@ -248,8 +531,65 @@ const AttendanceList = () => {
               )}
             </tbody>
           </table>
+
+
         </div>
       </div>
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+
+            <h2>Monthly Report</h2>
+
+            <select
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+            >
+              <option value="">Select Employee</option>
+              {employees.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
+            </select>
+
+            <input type="number" value={month} onChange={(e) => setMonth(e.target.value)} />
+            <input type="number" value={year} onChange={(e) => setYear(e.target.value)} />
+
+            <button onClick={fetchMonthlyReport}>Get Report</button>
+            <button onClick={exportMonthlyReport}>Export Excel</button>
+            <button onClick={closeModal}>Close</button>
+            <div className="modal-table">
+              {report.length === 0 ? (
+                <p style={{ marginTop: "10px" }}>No data available</p>
+              ) : (
+                <table className="elegant-table" style={{ marginTop: "10px" }}>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Check In</th>
+                      <th>Check Out</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {report.map((r, i) => (
+                      <tr key={i}>
+                        <td>{formatDate(r.date)}</td>
+                        <td>{formatTime(r.check_in)}</td>
+                        <td>{formatTime(r.check_out)}</td>
+                        <td>{r.type}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -32,6 +32,42 @@
   color: var(--text-main);
 }
 
+/* Container */
+.attendance-toggle {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+/* Default Button */
+.attendance-toggle button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 20px;
+  background: #f1f3f6;
+  color: #444;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover Effect */
+.attendance-toggle button:hover {
+  background: #e0e3eb;
+}
+
+/* Active Button */
+.attendance-toggle .active-toggle {
+  background: linear-gradient(135deg, #6c5ce7, #8e7dff);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
+
+/* Optional: Add smooth press effect */
+.attendance-toggle button:active {
+  transform: scale(0.95);
+}
+
 /* Card */
 
 .glass-panel {
@@ -298,6 +334,252 @@
   gap: 16px;
 }
 
+.primary-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.success-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.success-btn:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Modal Overlay */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal Box */
+
+.modal-box {
+  background: white;
+  width: 90%;
+  max-width: 700px;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp 0.3s ease;
+}
+
+/* Header */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.close-icon {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Filters */
+
+.modal-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+/* Inputs */
+
+.modal-filters select,
+.modal-filters input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+}
+
+.modal-filters select:focus,
+.modal-filters input:focus {
+  border-color: var(--primary);
+}
+
+/* Modal Table */
+
+.modal-table {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.modal-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-table th,
+.modal-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.modal-table th {
+  text-align: left;
+  color: var(--text-muted);
+}
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(6px);
+}
+
+/* ===== MODAL BOX ===== */
+.modal-box {
+  width: 420px;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: modalFade 0.3s ease;
+}
+
+/* ===== TITLE ===== */
+.modal-box h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ===== INPUTS & SELECT ===== */
+.modal-box select,
+.modal-box input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.modal-box select:focus,
+.modal-box input:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
+}
+
+/* ===== BUTTONS ===== */
+.modal-box button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* GET REPORT */
+.modal-box button:nth-of-type(1) {
+  background: #6c63ff;
+  color: white;
+}
+
+.modal-box button:nth-of-type(1):hover {
+  background: #5a52e0;
+}
+
+/* EXPORT */
+.modal-box button:nth-of-type(2) {
+  background: #28a745;
+  color: white;
+}
+
+.modal-box button:nth-of-type(2):hover {
+  background: #218838;
+}
+
+/* CLOSE */
+.modal-box button:nth-of-type(3) {
+  background: #f1f1f1;
+  color: #333;
+}
+
+.modal-box button:nth-of-type(3):hover {
+  background: #ddd;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Responsive Layouts */
 
 /* Laptop / small desktop - 1024px */
@@ -359,6 +641,18 @@
     gap: 12px;
   }
 
+  .attendance-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .attendance-toggle button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
   .stat-badge {
     padding: 5px 10px;
   }
@@ -395,6 +689,22 @@
   .status-pill {
     font-size: 10px;
     padding: 2px 8px;
+  }
+}
+
+@media (max-width: 500px) {
+  .modal-box {
+    padding: 15px;
+  }
+
+  .modal-filters {
+    flex-direction: column;
+  }
+
+  .modal-filters select,
+  .modal-filters input,
+  .modal-filters button {
+    width: 100%;
   }
 }
 

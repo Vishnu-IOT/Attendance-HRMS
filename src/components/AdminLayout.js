@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet} from 'react-router-dom';
 import { FiHome, FiUserPlus, FiLogOut, FiCalendar, FiUsers, FiMenu, FiX, FiFileText, FiShield } from 'react-icons/fi';
 import '../styles/AdminLayout.css';
 import { BsSuitcase2 } from 'react-icons/bs';
@@ -8,15 +8,13 @@ import { GoOrganization } from 'react-icons/go';
 import { IoTicketOutline } from 'react-icons/io5';
 
 const AdminLayout = () => {
-    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        navigate('/');
+        window.location.href = "/";
     };
-
     const closeSidebar = () => setSidebarOpen(false);
 
     return (

@@ -20,22 +20,35 @@ import CompanyDetails from './pages/CompanyDetails';
 import RaiseTicket from './pages/RaiseTicket';
 import ProtectedRoute from './pages/ProtectedRoute';
 
+
+
 function App() {
+
+  const token = localStorage.getItem("token");
+
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              token && token !== "undefined" && token !== "null" ? (
+                <Navigate to="/admin" replace />
+              ) : (
+                <Login />
+              )
+            }
+          />
           <Route
             path="/admin"
             element={
               <ProtectedRoute>
-                {' '}
-                <AdminLayout />{' '}
+                <AdminLayout />
               </ProtectedRoute>
             }
           >
-            {' '}
+
             <Route index element={<DashboardHome />} />
             <Route path="add-employee" element={<RegistrationForm />} />
             <Route path="emp-list" element={<EmpList />} />

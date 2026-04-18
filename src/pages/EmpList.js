@@ -7,12 +7,17 @@ import animationData from '../LottieFiles/Employee Search.json';
 const API_URL = 'https://hrms.mpdatahub.com/api/employee-List';
 const UPDATE_URL = 'https://hrms.mpdatahub.com/api/update-profile';
 const INACTIVE_URL = 'https://hrms.mpdatahub.com/api/employees/inactive';
+const INTERN_ACTIVE_URL = 'https://hrms.mpdatahub.com/api/employee-List-roles';
+const INTERN_INACTIVE_URL = 'https://hrms.mpdatahub.com/api/employees/inactive/roles';
+const DELETE_URL = 'https://hrms.mpdatahub.com/api/remove-user';
 
 export default function EmpList() {
   const [employees, setEmployees] = useState([]);
   const [inactiveEmployees, setInactiveEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const [editModal, setEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -22,9 +27,14 @@ export default function EmpList() {
 
   const [filterStatus, setFilterStatus] = useState('active');
 
+  const [activeInterns, setActiveInterns] = useState([]);
+  const [inactiveInterns, setInactiveInterns] = useState([]);
+
   useEffect(() => {
     fetchEmployees();
     fetchInactiveEmployees();
+    fetchActiveInterns();
+    fetchInactiveInterns();
   }, []);
 
   const defaultOptions = {
@@ -36,9 +46,60 @@ export default function EmpList() {
     },
   };
 
+  const fetchActiveInterns = async () => {
+    try {
+      const res = await fetch(INTERN_ACTIVE_URL);
+      const json = await res.json();
+
+      if (json.success) {
+        setActiveInterns(json.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchInactiveInterns = async () => {
+    try {
+      const res = await fetch(INTERN_INACTIVE_URL);
+      const json = await res.json();
+
+      if (json.success) {
+        setInactiveInterns(json.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteEmployee = async () => {
+    if (!deleteId) return;
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${DELETE_URL}?id=${deleteId}`);
+      const json = await res.json();
+
+      if (json.success) {
+        await fetchEmployees();
+        await fetchInactiveEmployees();
+        await fetchActiveInterns();
+        await fetchInactiveInterns();
+        setDeleteModal(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    setLoading(false);
+  };
+
   const counts = {
     active: employees.length,
     inactive: inactiveEmployees.length,
+    activeIntern: activeInterns.length,
+    inactiveIntern: inactiveInterns.length,
   };
 
   /* ---------------- FETCH ACTIVE EMPLOYEES ---------------- */
@@ -74,7 +135,19 @@ export default function EmpList() {
 
     setLoading(false);
   };
+  const activeInternFiltered = activeInterns.filter(
+    (emp) =>
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
+  const inactiveInternFiltered = inactiveInterns.filter(
+    (emp) =>
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   /* ---------------- UPDATE EMPLOYEES STATUS ---------------- */
 
   const updateEmployeeStatus = async (id, status) => {
@@ -88,6 +161,8 @@ export default function EmpList() {
       if (json.success) {
         fetchEmployees();
         fetchInactiveEmployees();
+        fetchActiveInterns();
+        fetchInactiveInterns();
       }
     } catch (err) {
       console.log(err);
@@ -192,11 +267,10 @@ export default function EmpList() {
       console.log('API Response:', json);
 
       if (json.success) {
-        setEmployees((prev) =>
-          prev.map((emp) =>
-            emp.id === editData.id ? { ...emp, ...editData } : emp
-          )
-        );
+        await fetchEmployees();
+        await fetchInactiveEmployees();
+        await fetchActiveInterns();
+        await fetchInactiveInterns();
 
         setEditModal(false);
       } else {
@@ -220,6 +294,10 @@ export default function EmpList() {
       emp.empid?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const openDelete = (id) => {
+  setDeleteId(id);
+  setDeleteModal(true);
+};
   /* ---------------- UI ---------------- */
   return (
     <div className="emplist-page">
@@ -248,7 +326,7 @@ export default function EmpList() {
       {loading && <p>Loading...</p>}
 
       <div className="pl-tabs">
-        {['active', 'inactive'].map((s) => (
+        {['active', 'inactive', 'activeIntern', 'inactiveIntern'].map((s) => (
           <button
             key={s}
             className={`pl-tab ${filterStatus === s ? 'pl-tab--active' : ''}`}
@@ -270,7 +348,15 @@ export default function EmpList() {
             <p>Loading employees...</p>
           </div>
         ) : (
-          (filterStatus === 'active' ? active : inactive).map((emp) => (
+          (
+            filterStatus === 'active'
+              ? active
+              : filterStatus === 'inactive'
+                ? inactive
+                : filterStatus === 'activeIntern'
+                  ? activeInternFiltered
+                  : inactiveInternFiltered
+          ).map((emp) => (
             <div className="emp-card" key={emp.id}>
               <div className="emp-card-top">
                 <img
@@ -321,10 +407,17 @@ export default function EmpList() {
               </div>
 
               <div className="emp-card-actions">
-                <button className="btn-edit" onClick={() => openEdit(emp)}>
-                  <FiEdit2 /> Edit
-                </button>
+                {(filterStatus === 'inactive' || filterStatus === 'inactiveIntern') ? (
+                  <button className="btn-delete" onClick={() => openDelete(emp.id)}>
+                    Delete
+                  </button>
+                ) : (
+                  <button className="btn-edit" onClick={() => openEdit(emp)}>
+                    <FiEdit2 /> Edit
+                  </button>
+                )}
               </div>
+
             </div>
           ))
         )}
@@ -341,6 +434,7 @@ export default function EmpList() {
               <button
                 className="modal-close"
                 onClick={() => setEditModal(false)}
+                style={{width : 100}}
               >
                 <FiX />
               </button>
@@ -418,6 +512,34 @@ export default function EmpList() {
                     <FiSave /> Save
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <div className="modal-header">
+              <h2>Confirm Delete</h2>
+            </div>
+
+            <p>Are you sure you want to delete this employee?</p>
+
+            <div className="modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setDeleteModal(false)}
+              >
+                No
+              </button>
+
+              <button
+                className="btn-delete"
+                onClick={deleteEmployee}
+              >
+                Yes, Delete
               </button>
             </div>
           </div>

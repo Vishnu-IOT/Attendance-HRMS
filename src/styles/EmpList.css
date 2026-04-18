@@ -9,6 +9,96 @@
   min-height: 100vh;
 }
 
+/* Overlay (background blur) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal box */
+.modal-box {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  width: 350px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.3s ease;
+  text-align: center;
+}
+
+/* Header */
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+/* Message text */
+.modal-box p {
+  margin: 15px 0 25px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Footer buttons */
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Cancel button */
+.btn-cancel {
+  padding: 8px 18px;
+  border: none;
+  background: #ccc;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-cancel:hover {
+  background: #b5b5b5;
+}
+
+/* Delete button */
+.btn-delete {
+  padding: 8px 18px;
+  border: none;
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+}
+
+/* Animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* HEADER */
 
 .emplist-header {
@@ -345,11 +435,11 @@
   transition: 0.3s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #149f96;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(22px);
 }
 
@@ -497,52 +587,42 @@ input:checked + .slider:before {
 
 /* ======================== 1024px (Tablet / Small Laptop) ======================== */
 
+/* ======================== 1024px (Tablet / Small Laptop) ======================== */
 @media (max-width: 1024px) {
   .emplist-page {
-    padding: 24px;
-  }
-
-  .emplist-header {
-    padding: 22px 24px;
-  }
-
-  .emplist-title h1 {
-    font-size: 22px;
-  }
-
-  .title-icon {
-    font-size: 30px;
-    padding: 8px;
-  }
-
-  .emplist-search {
-    width: 220px;
-    font-size: 13px;
-  }
-
-  .emp-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-  }
-
-  .emp-avatar {
-    width: 78px;
-    height: 78px;
-  }
-}
-
-/* ======================== 768px (Tablet / Large Mobile) ======================== */
-
-@media (max-width: 768px) {
-  .emplist-page {
-    padding: 18px;
+    padding: 20px;
   }
 
   .emplist-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
+  }
+
+  .emplist-search {
+    width: 220px;
+  }
+
+  .emp-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  .modal-box {
+    max-width: 90%;
+  }
+}
+
+
+/* ======================== 768px (Tablet) ======================== */
+@media (max-width: 768px) {
+  .emplist-page {
+    padding: 15px;
+  }
+
+  .emplist-header {
     padding: 20px;
+    border-radius: 14px;
   }
 
   .emplist-title h1 {
@@ -551,44 +631,19 @@ input:checked + .slider:before {
 
   .emplist-search {
     width: 100%;
-    max-width: 120px;
   }
 
   .emp-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-  }
-
-  .emp-card-top {
-    padding: 25px 0 50px;
-  }
-
-  .emp-avatar {
-    width: 70px;
-    height: 70px;
-    bottom: -35px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
   .emp-card-body {
-    padding: 50px 18px 16px;
-  }
-
-  .emp-card-body h3 {
-    font-size: 16px;
-  }
-
-  .emp-card-body p {
-    font-size: 12.5px;
-  }
-
-  /* modal */
-
-  .modal-box {
-    max-width: 90%;
+    padding: 50px 15px 15px;
   }
 
   .modal-form {
     grid-template-columns: 1fr;
+    /* stack form fields */
   }
 
   .modal-form input[name="address"] {
@@ -596,95 +651,139 @@ input:checked + .slider:before {
   }
 }
 
-/* ======================== 420px (Mobile Phones) ======================== */
 
+/* ======================== 420px (Mobile) ======================== */
+/* ======================== 420px (Mobile FIXED) ======================== */
 @media (max-width: 420px) {
+
+  /* PAGE */
   .emplist-page {
-    padding: 14px;
+    padding: 10px;
   }
 
+  /* HEADER */
   .emplist-header {
-    padding: 16px;
-    border-radius: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+    border-radius: 12px;
   }
 
-  .title-icon {
-    font-size: 26px;
-    padding: 6px;
+  .emplist-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 
   .emplist-title h1 {
     font-size: 18px;
   }
 
-  .emplist-title p {
-    font-size: 12px;
-  }
-
   .emplist-search {
     width: 100%;
-    font-size: 12px;
-    padding: 10px 14px 10px 36px;
   }
 
+  /* GRID */
   .emp-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 
+  /* CARD */
   .emp-card {
-    border-radius: 16px;
-  }
-
-  .emp-card-top {
-    padding: 22px 0 45px;
+    border-radius: 14px;
   }
 
   .emp-avatar {
-    width: 64px;
-    height: 64px;
+    width: 65px;
+    height: 65px;
     bottom: -32px;
   }
 
   .emp-card-body {
-    padding: 45px 16px 14px;
+    padding: 45px 12px 12px;
   }
 
   .emp-card-body h3 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .emp-position {
     font-size: 11px;
   }
 
-  .emp-card-body p {
-    font-size: 12px;
-  }
+  /* ================= MODAL FIX ================= */
 
-  .btn-edit {
-    font-size: 12px;
-    padding: 9px;
-  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
 
-  /* modal */
+    display: block;                 /* ✅ remove flex lock */
+    overflow-y: auto;               /* ✅ allow full scroll */
+    -webkit-overflow-scrolling: touch;
+
+    padding: 15px 10px;             /* ✅ spacing */
+  }
 
   .modal-box {
-    max-width: 95%;
-    border-radius: 16px;
+    width: 100%;
+    max-width: 100%;
+
+    margin: auto;
+    margin-top: 20px;               /* ✅ top spacing */
+    margin-bottom: 20px;
+
+    border-radius: 14px;
+
+    max-height: none;               /* ❌ remove height restriction */
+    overflow: visible;              /* ❌ prevent inner scroll trap */
+  }
+
+  /* HEADER */
+  .modal-header {
+    padding: 14px 16px;
   }
 
   .modal-header h2 {
     font-size: 16px;
   }
 
-  .modal-footer {
-    flex-direction: column;
+  /* FORM */
+  .modal-form {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 10px;
   }
 
+  .modal-form input {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+
+  .modal-form input[name="address"] {
+    grid-column: span 1;
+  }
+
+  /* FOOTER */
+  .modal-footer {
+    flex-direction: column;         /* ✅ stack buttons */
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .btn-save,
   .btn-cancel,
-  .btn-save {
+  .btn-delete {
     width: 100%;
     justify-content: center;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* DELETE MODAL TEXT */
+  .modal-box p {
+    font-size: 13px;
+    margin: 10px 0 18px;
   }
 }

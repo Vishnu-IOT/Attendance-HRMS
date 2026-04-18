@@ -364,7 +364,7 @@ const RegistrationForm = () => {
 
               {branches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
-                  {branch.branch_name}
+                  {branch.name}
                 </option>
               ))}
             </select>
